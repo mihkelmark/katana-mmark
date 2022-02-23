@@ -2,10 +2,10 @@
   "name": "katana-homework",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/index.js",
+  "main": "dist/app.js",
   "scripts": {
     "dev": "nodemon",
-    "start": "tsc && node dist/index.js",
+    "start": "tsc && node dist/app.js",
     "lint": "eslint . --ext .ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -13,7 +13,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.3"
+    "express": "^4.17.3",
+    "mongoose": "^6.2.3"
   },
   "devDependencies": {
     "@types/express": "^4.17.13",

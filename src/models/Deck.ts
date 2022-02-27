@@ -9,12 +9,11 @@ const deckSchema = new mongoose.Schema(
     type: {
       type: String,
       enum: ['FULL', 'SHORT'],
-      default: 'FULL',
+      required: true,
     },
     shuffled: {
       type: Boolean,
       required: true,
-      default: false,
     },
     cards: { type: [Card.schema], required: true },
   },

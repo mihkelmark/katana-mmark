@@ -1,6 +1,6 @@
 import { CardValuesUnion, CardSuitsUnion } from './types';
 
-export const determineCardCode = (value: CardValuesUnion, suit: CardSuitsUnion) => {
+export const determineCardCode = (value: CardValuesUnion, suit: CardSuitsUnion): string => {
   let valueLetter;
   const suitLetter = suit[0];
 
@@ -13,7 +13,7 @@ export const determineCardCode = (value: CardValuesUnion, suit: CardSuitsUnion) 
   return `${valueLetter}${suitLetter}`;
 };
 
-export const shuffleArray = (arr: Array<any>) => {
+export const shuffleArray = <T>(arr: Array<T>): Array<T> => {
   /*
    * Fisher–Yates shuffle
    */

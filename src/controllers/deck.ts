@@ -1,8 +1,10 @@
 import { Request, Response } from 'express';
+import mongoose from 'mongoose';
+
 import { determineCardCode, shuffleArray } from '../utils';
 import { CARD_VALUES, CARD_SUITS } from '../constants';
 
-import Deck from '../models/deck';
+import Deck from '../models/Deck';
 
 const getDecks = async (req: Request, res: Response) => {
   const result = await Deck.find({});
@@ -40,7 +42,6 @@ const createDeck = async (req: Request, res: Response) => {
   let deck; // type?
 
   if (type === 'FULL') {
-    // without supplying deck size, it still creates a short one.
     cardValuesRequested = CARD_VALUES;
   } else {
     cardValuesRequested = CARD_VALUES.slice(4);
@@ -72,7 +73,11 @@ const createDeck = async (req: Request, res: Response) => {
       result: { deckId: result._id, type, shuffled, remaining: deck.length },
     });
   } catch (err) {
-    res.status(500).json({ status: 500, error: err.message });
+    if (err instanceof mongoose.Error.ValidationError) {
+      res.status(500).json({ status: 500, error: err.message });
+    } else {
+      res.status(500).json({ status: 500, error: JSON.stringify(err) });
+    }
   }
 };
 
@@ -87,14 +92,14 @@ const drawFromDeck = async (req: Request, res: Response) => {
       return res.status(404).json({ status: 404, error: `Deck with id '${uuid}' not found` });
     }
 
-    if (deck.cards.length < 1) {
-      // this case should be handled as well. Think of some nice lean uniform validation logic.
-    }
-
     if (!count) {
       return res
         .status(500)
         .json({ status: 500, error: `Please provide a positive number of cards you want to draw` });
+    }
+
+    if (deck.cards.length < 1) {
+      return res.status(405).json({ status: 405, error: `The deck does not have any cards left` });
     }
 
     const deckCards = deck.cards;
@@ -111,7 +116,11 @@ const drawFromDeck = async (req: Request, res: Response) => {
 
     res.json({ status: 200, result: drawnCards });
   } catch (err) {
-    res.status(500).json({ status: 500, error: err.message });
+    if (err instanceof mongoose.Error.ValidationError) {
+      res.status(500).json({ status: 500, error: err.message });
+    } else {
+      res.status(500).json({ status: 500, error: JSON.stringify(err) });
+    }
   }
 };
 

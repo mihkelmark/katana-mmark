@@ -1,5 +1,11 @@
 import mongoose from 'mongoose';
-import { CardValues, CardSuits } from '../types';
+import { CardValues, CardValuesUnion, CardSuits, CardSuitsUnion } from '../types';
+
+export interface CardType {
+  value: CardValuesUnion;
+  suit: CardSuitsUnion;
+  code: string;
+}
 
 const cardSchema = new mongoose.Schema(
   {

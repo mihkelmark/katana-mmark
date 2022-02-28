@@ -3,10 +3,11 @@
         "module": "commonjs",
         "esModuleInterop": true,
         "target": "es6",
-        // "strict": true, // TODO: strict.
+        "strict": true,
         "noImplicitAny": true,
         "moduleResolution": "node",
         "sourceMap": true,
+        "useUnknownInCatchVariables": false,
         "outDir": "dist",
         "baseUrl": ".",
         "paths": {
@@ -15,5 +16,5 @@
             ]
         }
     },
-    "include": ["src/**/*", "app.ts" ]
+    "include": ["src/**/*", "test/**.*", "app.ts" ]
 }

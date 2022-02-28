@@ -4,11 +4,29 @@ import mongoose from 'mongoose';
 import { determineCardCode, shuffleArray } from '../utils';
 import { CARD_VALUES, CARD_SUITS } from '../constants';
 
-import Deck from '../models/Deck';
+import Deck, { DeckType } from '../models/Deck';
+import { CardType } from '../models/Card';
+
+type ErrorResponseObject = {
+  status: number;
+  error: string;
+};
+
+type SuccessResponseObject = {
+  status: number;
+  result: unknown;
+};
 
 const getDecks = async (req: Request, res: Response) => {
-  const result = await Deck.find({});
-  res.json(result);
+  try {
+    const result = await Deck.find({});
+    res.status(200).json(<SuccessResponseObject>{
+      status: 200,
+      result,
+    });
+  } catch (err) {
+    res.status(500).json(<ErrorResponseObject>{ status: 500, error: err.message });
+  }
 };
 
 const getDeck = async (req: Request, res: Response) => {
@@ -18,20 +36,17 @@ const getDeck = async (req: Request, res: Response) => {
     const deck = await Deck.findById(uuid).exec();
 
     if (!deck) {
-      return res.status(404).json({ status: 404, error: `Deck with id '${uuid}' not found` });
+      return res
+        .status(404)
+        .json(<ErrorResponseObject>{ status: 404, error: `Deck with id '${uuid}' not found` });
     }
 
     res.json({
       status: 200,
-      result: {
-        deckId: deck._id,
-        shuffled: deck.shuffled,
-        remaining: deck.cards.length,
-        cards: deck.cards,
-      },
+      result: deck,
     });
   } catch (err) {
-    res.status(500).json({ status: 500, error: err.message });
+    res.status(500).json(<ErrorResponseObject>{ status: 500, error: err.message });
   }
 };
 
@@ -66,17 +81,17 @@ const createDeck = async (req: Request, res: Response) => {
   };
 
   try {
-    const result = await new Deck(item).save();
+    const deck = await new Deck(item).save();
 
-    res.json({
+    res.json(<SuccessResponseObject>{
       status: 200,
-      result: { deckId: result._id, type, shuffled, remaining: deck.length },
+      result: deck,
     });
   } catch (err) {
     if (err instanceof mongoose.Error.ValidationError) {
-      res.status(500).json({ status: 500, error: err.message });
+      res.status(400).json(<ErrorResponseObject>{ status: 400, error: err.message });
     } else {
-      res.status(500).json({ status: 500, error: JSON.stringify(err) });
+      res.status(500).json(<ErrorResponseObject>{ status: 500, error: JSON.stringify(err) });
     }
   }
 };
@@ -86,20 +101,25 @@ const drawFromDeck = async (req: Request, res: Response) => {
   const count: number = req.body.count;
 
   try {
-    const deck = await Deck.findById(uuid).exec();
+    const deck: DeckType = await Deck.findById(uuid).exec();
 
     if (!deck) {
-      return res.status(404).json({ status: 404, error: `Deck with id '${uuid}' not found` });
+      return res
+        .status(404)
+        .json(<ErrorResponseObject>{ status: 404, error: `Deck with id '${uuid}' not found` });
     }
 
     if (!count) {
-      return res
-        .status(500)
-        .json({ status: 500, error: `Please provide a positive number of cards you want to draw` });
+      return res.status(400).json(<ErrorResponseObject>{
+        status: 400,
+        error: `Please provide a positive number of cards you want to draw`,
+      });
     }
 
     if (deck.cards.length < 1) {
-      return res.status(405).json({ status: 405, error: `The deck does not have any cards left` });
+      return res
+        .status(405)
+        .json(<ErrorResponseObject>{ status: 400, error: `The deck does not have any cards left` });
     }
 
     const deckCards = deck.cards;
@@ -109,17 +129,18 @@ const drawFromDeck = async (req: Request, res: Response) => {
       { _id: uuid },
       {
         cards: deckCards.filter(
-          (deckCard: any) => !drawnCards.some((drawnCard: any) => deckCard.code === drawnCard.code),
+          (deckCard: CardType) =>
+            !drawnCards.some((drawnCard: CardType) => deckCard.code === drawnCard.code),
         ),
       },
     ).exec();
 
-    res.json({ status: 200, result: drawnCards });
+    res.json(<SuccessResponseObject>{ status: 200, result: drawnCards });
   } catch (err) {
     if (err instanceof mongoose.Error.ValidationError) {
-      res.status(500).json({ status: 500, error: err.message });
+      res.status(400).json(<ErrorResponseObject>{ status: 400, error: err.message });
     } else {
-      res.status(500).json({ status: 500, error: JSON.stringify(err) });
+      res.status(500).json(<ErrorResponseObject>{ status: 500, error: JSON.stringify(err) });
     }
   }
 };

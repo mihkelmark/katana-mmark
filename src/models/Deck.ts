@@ -1,9 +1,16 @@
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
 
 import Card from './Card';
 
-const deckSchema = new mongoose.Schema(
+export interface DeckType {
+  _id: string;
+  type: string;
+  shuffled: boolean;
+  cards: any;
+}
+
+const deckSchema = new mongoose.Schema<DeckType>(
   {
     _id: { type: String, default: uuidv4 },
     type: {
@@ -17,7 +24,7 @@ const deckSchema = new mongoose.Schema(
     },
     cards: { type: [Card.schema], required: true },
   },
-  { _id: false },
+  { versionKey: false },
 );
 
 export default mongoose.models.Deck || mongoose.model('Deck', deckSchema);

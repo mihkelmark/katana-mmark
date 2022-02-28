@@ -12,6 +12,7 @@ services:
     volumes:
       - db:/data/db
   app:
+    container_name: katana-homework-mmark
     depends_on:
       - mongodb
     build: ./
@@ -25,7 +26,11 @@ services:
       - DB_PASSWORD=$MONGODB_PASSWORD
       - DB_NAME=$MONGODB_DATABASE
       - DB_PORT=$MONGODB_DOCKER_PORT
+      - NODE_ENV=dev
+      - NODE_DOCKER_TEST_PORT=$NODE_DOCKER_TEST_PORT
     stdin_open: true
     tty: true
+    volumes:
+      - ./:/katana-homework
 volumes:
   db:

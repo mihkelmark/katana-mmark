@@ -27,4 +27,4 @@ const deckSchema = new mongoose.Schema<DeckType>(
   { versionKey: false },
 );
 
-export default mongoose.models.Deck || mongoose.model('Deck', deckSchema);
+export default mongoose.models.Deck || mongoose.model<DeckType>('Deck', deckSchema);

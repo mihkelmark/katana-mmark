@@ -7,7 +7,7 @@ export interface CardType {
   code: string;
 }
 
-const cardSchema = new mongoose.Schema(
+const cardSchema = new mongoose.Schema<CardType>(
   {
     value: {
       type: String,
@@ -38,4 +38,4 @@ const cardSchema = new mongoose.Schema(
   { _id: false },
 );
 
-export default mongoose.models.User || mongoose.model('Card', cardSchema);
+export default mongoose.models.User || mongoose.model<CardType>('Card', cardSchema);

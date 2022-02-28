@@ -1,8 +1,6 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
-import mongoose from 'mongoose';
 
-import { DB_CONN_STRING } from '../config/db.config';
 import server, { con } from '../app';
 import Deck, { DeckType } from '../src/models/Deck';
 import { CardType } from '../src/models/Card';

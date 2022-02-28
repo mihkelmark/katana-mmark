@@ -10,8 +10,7 @@ dotenv.config({ path: path.resolve(__dirname, '.././.env') });
 
 import { DB_CONN_STRING } from './config/db.config';
 
-// mongoose.connect('mongodb://127.0.0.1:27017/katana-test'); // todo vaheta see välja conn stringi vastu.
-mongoose.connect(DB_CONN_STRING); // todo vaheta see välja conn stringi vastu.
+mongoose.connect(DB_CONN_STRING);
 
 const app = express();
 const port =
